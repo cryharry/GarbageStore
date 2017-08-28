@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.GarbageController">
+   <center>
+      <ScrollPane prefHeight="1080.0" prefWidth="1453.0" BorderPane.alignment="CENTER">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="900.0" prefWidth="1531.0">
+               <children>
+                  <TableView layoutX="8.0" layoutY="7.0" prefHeight="897.0" prefWidth="1523.0">
+                    <columns>
+                      <TableColumn prefWidth="75.0" text="코드" />
+                      <TableColumn prefWidth="75.0" text="판매소명" />
+                        <TableColumn prefWidth="75.0" text="계약일자" />
+                        <TableColumn prefWidth="75.0" text="대표자" />
+                        <TableColumn prefWidth="75.0" text="사업자번호" />
+                        <TableColumn prefWidth="445.0" text="주소" />
+                        <TableColumn prefWidth="197.0" text="전화번호" />
+                        <TableColumn prefWidth="139.0" text="폰번호" />
+                        <TableColumn minWidth="0.0" prefWidth="147.0" text="관할금고" />
+                        <TableColumn minWidth="0.0" prefWidth="105.0" text="판매소구분" />
+                        <TableColumn prefWidth="113.0" text="해지일자" />
+                    </columns>
+                  </TableView>
+               </children>
+            </AnchorPane>
+        </content>
+      </ScrollPane>
+   </center>
+   <top>
+      <AnchorPane prefHeight="128.0" prefWidth="1453.0" BorderPane.alignment="CENTER">
+         <children>
+            <Button fx:id="searchBtn" layoutX="422.0" layoutY="48.0" mnemonicParsing="false" prefHeight="60.0" prefWidth="119.0" text="검  색" />
+            <Button fx:id="excelBtn" layoutX="576.0" layoutY="49.0" mnemonicParsing="false" prefHeight="59.0" prefWidth="128.0" text="Excel" />
+            <Group layoutX="158.0" layoutY="20.0">
+               <children>
+                  <RadioButton layoutX="94.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="79.0" text="거래종료" />
+                  <RadioButton layoutY="16.0" mnemonicParsing="false" text="정상거래" />
+               </children>
+            </Group>
+            <Label alignment="CENTER" layoutX="76.0" layoutY="33.0" prefHeight="31.0" prefWidth="56.0" text="거래구분" textAlignment="CENTER" />
+            <Label alignment="CENTER" layoutX="63.0" layoutY="76.0" prefHeight="36.0" prefWidth="82.0" text="새마을금고" textAlignment="CENTER" />
+            <ComboBox fx:id="barCom" layoutX="158.0" layoutY="82.0" prefHeight="25.0" prefWidth="184.0" />
+         </children>
+      </AnchorPane>
+   </top>
+</BorderPane>
