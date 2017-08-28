@@ -1,109 +1,115 @@
 package application;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.StringProperty;
+
 public class StoreBean {
-	private int key_num;
-	private String sto_name;
-	private String in_date;
-	private String ceo_name;
-	private String corp_num;
-	private String address;
-	private String main_phone;
-	private String ceo_hp;
-	private int bar_id;
-	private String store_state;
-	private String out_date;
-	private String trade_state;
-	private String c_upte;
-	private String c_jongmok;
-	private String e_mail;
-	public int getKey_num() {
+	private IntegerProperty key_num;
+	private StringProperty sto_name;
+	private StringProperty in_date;
+	private StringProperty ceo_name;
+	private StringProperty corp_num;
+	private StringProperty address;
+	private StringProperty main_phone;
+	private StringProperty ceo_hp;
+	private IntegerProperty bar_id;
+	private StringProperty store_state;
+	private StringProperty out_date;
+	private StringProperty trade_state;
+	private StringProperty c_upte;
+	private StringProperty c_jongmok;
+	private StringProperty e_mail;
+	
+	public IntegerProperty getKey_num() {
 		return key_num;
 	}
-	public void setKey_num(int key_num) {
+	public void setKey_num(IntegerProperty key_num) {
 		this.key_num = key_num;
 	}
-	public String getSto_name() {
+	public StringProperty getSto_name() {
 		return sto_name;
 	}
-	public void setSto_name(String sto_name) {
+	public void setSto_name(StringProperty sto_name) {
 		this.sto_name = sto_name;
 	}
-	public String getIn_date() {
+	public StringProperty getIn_date() {
 		return in_date;
 	}
-	public void setIn_date(String in_date) {
+	public void setIn_date(StringProperty in_date) {
 		this.in_date = in_date;
 	}
-	public String getCeo_name() {
+	public StringProperty getCeo_name() {
 		return ceo_name;
 	}
-	public void setCeo_name(String ceo_name) {
+	public void setCeo_name(StringProperty ceo_name) {
 		this.ceo_name = ceo_name;
 	}
-	public String getCorp_num() {
+	public StringProperty getCorp_num() {
 		return corp_num;
 	}
-	public void setCorp_num(String corp_num) {
+	public void setCorp_num(StringProperty corp_num) {
 		this.corp_num = corp_num;
 	}
-	public String getAddress() {
+	public StringProperty getAddress() {
 		return address;
 	}
-	public void setAddress(String address) {
+	public void setAddress(StringProperty address) {
 		this.address = address;
 	}
-	public String getMain_phone() {
+	public StringProperty getMain_phone() {
 		return main_phone;
 	}
-	public void setMain_phone(String main_phone) {
+	public void setMain_phone(StringProperty main_phone) {
 		this.main_phone = main_phone;
 	}
-	public String getCeo_hp() {
+	public StringProperty getCeo_hp() {
 		return ceo_hp;
 	}
-	public void setCeo_hp(String ceo_hp) {
+	public void setCeo_hp(StringProperty ceo_hp) {
 		this.ceo_hp = ceo_hp;
 	}
-	public int getBar_id() {
+	public IntegerProperty getBar_id() {
 		return bar_id;
 	}
-	public void setBar_id(int bar_id) {
+	public void setBar_id(IntegerProperty bar_id) {
 		this.bar_id = bar_id;
 	}
-	public String getStore_state() {
+	public StringProperty getStore_state() {
 		return store_state;
 	}
-	public void setStore_state(String store_state) {
+	public void setStore_state(StringProperty store_state) {
 		this.store_state = store_state;
 	}
-	public String getOut_date() {
+	public StringProperty getOut_date() {
 		return out_date;
 	}
-	public void setOut_date(String out_date) {
+	public void setOut_date(StringProperty out_date) {
 		this.out_date = out_date;
 	}
-	public String getTrade_state() {
+	public StringProperty getTrade_state() {
 		return trade_state;
 	}
-	public void setTrade_state(String trade_state) {
+	public void setTrade_state(StringProperty trade_state) {
 		this.trade_state = trade_state;
 	}
-	public String getC_upte() {
+	public StringProperty getC_upte() {
 		return c_upte;
 	}
-	public void setC_upte(String c_upte) {
+	public void setC_upte(StringProperty c_upte) {
 		this.c_upte = c_upte;
 	}
-	public String getC_jongmok() {
+	public StringProperty getC_jongmok() {
 		return c_jongmok;
 	}
-	public void setC_jongmok(String c_jongmok) {
+	public void setC_jongmok(StringProperty c_jongmok) {
 		this.c_jongmok = c_jongmok;
 	}
-	public String getE_mail() {
+	public StringProperty getE_mail() {
 		return e_mail;
 	}
-	public void setE_mail(String e_mail) {
+	public void setE_mail(StringProperty e_mail) {
 		this.e_mail = e_mail;
 	}
+	
+	
 }

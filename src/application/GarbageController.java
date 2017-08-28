@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -22,6 +24,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 
 public class GarbageController implements Initializable{
 	List<String> list = new ArrayList<String>();
@@ -30,6 +34,7 @@ public class GarbageController implements Initializable{
 	ResultSet rs;
 	String sql, bar_name;
 	int bar_id = 0;
+	ObservableList<StoreBean> storeList;
 	
 	@FXML
 	Alert alert;
@@ -37,10 +42,16 @@ public class GarbageController implements Initializable{
 	private ComboBox<String> barCom;
 	@FXML
 	private Button searchBtn, excelBtn;
+	@FXML
+	private TableView<StoreBean> storeTable;
+	@FXML
+	private TableColumn<StoreBean, String> stoNameCol,inDateCol,ceoNameCol,corpNumCol,addressCol,phoneCol,hpCol,stoStateCol,outDateCol;
+	@FXML
+	private TableColumn<StoreBean, Integer> codeCol,barCol;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		getDB_info();
+		//getDB_info();
 		try {
 			ObservableList<String> barList = getBarName();
 			barCom.setItems(barList);
@@ -91,6 +102,7 @@ public class GarbageController implements Initializable{
 		}
 		return list;
 	}
+	
 	private Connection dbConn() {
 		//String DBUrl="jdbc:sqlserver://"+list.get(0)+":"+list.get(2)+";databaseName="+list.get(1);
 		String DBUrl="jdbc:sqlserver://210.99.49.107:9906;databaseName=dongnae_garbage";
@@ -107,34 +119,68 @@ public class GarbageController implements Initializable{
 		}
 		return con;
 	}
-	private void getStore(int bar_id) {
-		con = dbConn();
+	
+	private ObservableList<StoreBean> getStore(int bar_id) {
+		ObservableList<StoreBean> storeList = FXCollections.observableArrayList();
 		if(bar_id!=0) {
 			sql = "SELECT * FROM store_info WHERE bar_id="+bar_id;
-			try {
-				pstmt = con.prepareStatement(sql);
-				rs = pstmt.executeQuery();
-				List<StoreBean> storeList = new ArrayList<StoreBean>();
-				while(rs.next()) {
-					StoreBean store = new StoreBean();
-					store.setKey_num(rs.getInt("key_num"));
-					store.setSto_name(rs.getString("sto_name"));
-					store.setIn_date(rs.getString("in_date").substring(0, 10));
-					store.setCeo_name(rs.getString("ceo_name"));
-					store.setCorp_num(rs.getString("corp_num"));
-					store.setAddress(rs.getString("address"));
-					String main_phone = rs.getString("main_phone");
-					store.setMain_phone(main_phone.substring(0,2)+"-"+main_phone.substring(3,5)+"-"+main_phone.substring(6));
-					String ceo_hp = rs.getString("ceo_hp");
-					store.setMain_phone(ceo_hp.substring(0,2)+"-"+ceo_hp.substring(3,6)+"-"+ceo_hp.substring(7));
-					store.setBar_id(rs.getInt("bar_id"));
-					storeList.add(store);
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+		} else {
+			sql = "SELECT * FROM store_info";
 		}
-		
+		try {
+			rs = getRs(sql);
+			while(rs.next()) {
+				StoreBean store = new StoreBean();
+				store.setKey_num(new SimpleIntegerProperty(rs.getInt("key_num")));
+				store.setSto_name(new SimpleStringProperty(rs.getString("sto_name")));
+				store.setIn_date(new SimpleStringProperty(rs.getString("in_date").substring(0, 10)));
+				store.setCeo_name(new SimpleStringProperty(rs.getString("ceo_name")));
+				store.setCorp_num(new SimpleStringProperty(rs.getString("corp_num")));
+				store.setAddress(new SimpleStringProperty(rs.getString("address")));
+				String main_phone = rs.getString("main_phone");
+				if(!main_phone.equals("")) {
+					if(main_phone.length()>=7) {
+						store.setMain_phone(new SimpleStringProperty(main_phone.substring(0,3)+"-"+main_phone.substring(3,6)+"-"+main_phone.substring(6)));
+					}
+				}
+				//store.setMain_phone(new SimpleStringProperty(main_phone));
+				String ceo_hp = rs.getString("ceo_hp");
+				if(!ceo_hp.equals("")) {
+					if(ceo_hp.length()>=7) {
+						store.setCeo_hp(new SimpleStringProperty(ceo_hp.substring(0,3)+"-"+ceo_hp.substring(3,7)+"-"+ceo_hp.substring(7)));
+					}
+				}
+				//store.setCeo_hp(new SimpleStringProperty(ceo_hp));
+				store.setBar_id(new SimpleIntegerProperty(rs.getInt("bar_id")));
+				store.setStore_state(new SimpleStringProperty(rs.getString("store_state")));
+				store.setOut_date(new SimpleStringProperty(rs.getString("out_date").substring(0, 10)));
+				store.setTrade_state(new SimpleStringProperty(rs.getString("trade_state")));
+				store.setC_upte(new SimpleStringProperty(rs.getString("c_upte")));
+				store.setC_jongmok(new SimpleStringProperty(rs.getString("c_jongmok")));
+				store.setE_mail(new SimpleStringProperty(rs.getString("e_mail")));
+				storeList.add(store);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return storeList;	
+	}
+	
+	@FXML
+	private void tableSet() {
+		storeList = getStore(bar_id);
+		codeCol.setCellValueFactory(storeList->storeList.getValue().getKey_num().asObject());
+		stoNameCol.setCellValueFactory(storeList->storeList.getValue().getSto_name());
+		inDateCol.setCellValueFactory(storeList->storeList.getValue().getIn_date());
+		ceoNameCol.setCellValueFactory(storeList->storeList.getValue().getCeo_name());
+		corpNumCol.setCellValueFactory(storeList->storeList.getValue().getCorp_num());
+		addressCol.setCellValueFactory(storeList->storeList.getValue().getAddress());
+		phoneCol.setCellValueFactory(storeList->storeList.getValue().getMain_phone());
+		hpCol.setCellValueFactory(storeList->storeList.getValue().getCeo_hp());
+		barCol.setCellValueFactory(storeList->storeList.getValue().getBar_id().asObject());
+		stoStateCol.setCellValueFactory(storeList->storeList.getValue().getStore_state());
+		outDateCol.setCellValueFactory(storeList->storeList.getValue().getOut_date());
+		storeTable.setItems(storeList);
 	}
 	
 	private ResultSet getRs(String sql) throws SQLException {
@@ -142,5 +188,12 @@ public class GarbageController implements Initializable{
 		pstmt  = con.prepareStatement(sql);
 		rs = pstmt.executeQuery();
 		return rs;
+	}
+	
+	private void dbClose() {
+		if(con!=null)try {con.close();} catch (Exception e) {}
+		if(rs!=null)try {rs.close();} catch (Exception e) {}
+		if(pstmt!=null)try {pstmt.close();} catch (Exception e) {}
+		sql="";
 	}
 }

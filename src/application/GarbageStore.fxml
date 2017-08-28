@@ -8,23 +8,23 @@
 
 <BorderPane xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.GarbageController">
    <center>
-      <ScrollPane prefHeight="1080.0" prefWidth="1453.0" BorderPane.alignment="CENTER">
+      <ScrollPane prefHeight="1080.0" prefWidth="1834.0" BorderPane.alignment="CENTER">
         <content>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="900.0" prefWidth="1531.0">
                <children>
-                  <TableView layoutX="8.0" layoutY="7.0" prefHeight="897.0" prefWidth="1523.0">
+                  <TableView fx:id="storeTable" layoutX="8.0" layoutY="7.0" prefHeight="897.0" prefWidth="1819.0">
                     <columns>
-                      <TableColumn prefWidth="75.0" text="코드" />
-                      <TableColumn prefWidth="75.0" text="판매소명" />
-                        <TableColumn prefWidth="75.0" text="계약일자" />
-                        <TableColumn prefWidth="75.0" text="대표자" />
-                        <TableColumn prefWidth="75.0" text="사업자번호" />
-                        <TableColumn prefWidth="445.0" text="주소" />
-                        <TableColumn prefWidth="197.0" text="전화번호" />
-                        <TableColumn prefWidth="139.0" text="폰번호" />
-                        <TableColumn minWidth="0.0" prefWidth="147.0" text="관할금고" />
-                        <TableColumn minWidth="0.0" prefWidth="105.0" text="판매소구분" />
-                        <TableColumn prefWidth="113.0" text="해지일자" />
+                      <TableColumn fx:id="codeCol" prefWidth="75.0" text="코드" />
+                      <TableColumn fx:id="stoNameCol" prefWidth="105.0" text="판매소명" />
+                        <TableColumn fx:id="inDateCol" prefWidth="82.0" text="계약일자" />
+                        <TableColumn fx:id="ceoNameCol" prefWidth="95.0" text="대표자" />
+                        <TableColumn fx:id="corpNumCol" prefWidth="99.0" text="사업자번호" />
+                        <TableColumn fx:id="addressCol" prefWidth="562.0" text="주소" />
+                        <TableColumn fx:id="phoneCol" prefWidth="218.0" text="전화번호" />
+                        <TableColumn fx:id="hpCol" prefWidth="158.0" text="폰번호" />
+                        <TableColumn fx:id="barCol" minWidth="0.0" prefWidth="161.0" text="관할금고" />
+                        <TableColumn fx:id="stoStateCol" minWidth="0.0" prefWidth="134.0" text="판매소구분" />
+                        <TableColumn fx:id="outDateCol" prefWidth="124.0" text="해지일자" />
                     </columns>
                   </TableView>
                </children>
@@ -35,7 +35,7 @@
    <top>
       <AnchorPane prefHeight="128.0" prefWidth="1453.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="searchBtn" layoutX="422.0" layoutY="48.0" mnemonicParsing="false" prefHeight="60.0" prefWidth="119.0" text="검  색" />
+            <Button fx:id="searchBtn" layoutX="422.0" layoutY="48.0" mnemonicParsing="false" onAction="#tableSet" prefHeight="60.0" prefWidth="119.0" text="검  색" />
             <Button fx:id="excelBtn" layoutX="576.0" layoutY="49.0" mnemonicParsing="false" prefHeight="59.0" prefWidth="128.0" text="Excel" />
             <Group layoutX="158.0" layoutY="20.0">
                <children>
