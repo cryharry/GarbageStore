@@ -13,6 +13,7 @@ public class StoreBean {
 	private StringProperty main_phone;
 	private StringProperty ceo_hp;
 	private IntegerProperty bar_id;
+	private StringProperty bar_name;
 	private StringProperty store_state;
 	private StringProperty out_date;
 	private StringProperty trade_state;
@@ -110,6 +111,11 @@ public class StoreBean {
 	public void setE_mail(StringProperty e_mail) {
 		this.e_mail = e_mail;
 	}
-	
+	public StringProperty getBar_name() {
+		return bar_name;
+	}
+	public void setBar_name(StringProperty bar_name) {
+		this.bar_name = bar_name;
+	}
 	
 }

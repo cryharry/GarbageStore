@@ -15,16 +15,16 @@
                   <TableView fx:id="storeTable" layoutX="8.0" layoutY="7.0" prefHeight="897.0" prefWidth="1819.0">
                     <columns>
                       <TableColumn fx:id="codeCol" prefWidth="75.0" text="코드" />
-                      <TableColumn fx:id="stoNameCol" prefWidth="105.0" text="판매소명" />
-                        <TableColumn fx:id="inDateCol" prefWidth="82.0" text="계약일자" />
-                        <TableColumn fx:id="ceoNameCol" prefWidth="95.0" text="대표자" />
-                        <TableColumn fx:id="corpNumCol" prefWidth="99.0" text="사업자번호" />
-                        <TableColumn fx:id="addressCol" prefWidth="562.0" text="주소" />
-                        <TableColumn fx:id="phoneCol" prefWidth="218.0" text="전화번호" />
-                        <TableColumn fx:id="hpCol" prefWidth="158.0" text="폰번호" />
-                        <TableColumn fx:id="barCol" minWidth="0.0" prefWidth="161.0" text="관할금고" />
-                        <TableColumn fx:id="stoStateCol" minWidth="0.0" prefWidth="134.0" text="판매소구분" />
-                        <TableColumn fx:id="outDateCol" prefWidth="124.0" text="해지일자" />
+                      <TableColumn fx:id="stoNameCol" prefWidth="160.0" text="판매소명" />
+                        <TableColumn fx:id="inDateCol" prefWidth="85.0" text="계약일자" />
+                        <TableColumn fx:id="ceoNameCol" prefWidth="91.0" text="대표자" />
+                        <TableColumn fx:id="corpNumCol" prefWidth="104.0" text="사업자번호" />
+                        <TableColumn fx:id="addressCol" prefWidth="541.0" text="주소" />
+                        <TableColumn fx:id="phoneCol" prefWidth="179.0" text="전화번호" />
+                        <TableColumn fx:id="hpCol" prefWidth="166.0" text="폰번호" />
+                        <TableColumn fx:id="barCol" minWidth="0.0" prefWidth="165.0" text="관할금고" />
+                        <TableColumn fx:id="stoStateCol" minWidth="0.0" prefWidth="131.0" text="판매소구분" />
+                        <TableColumn fx:id="outDateCol" prefWidth="121.0" text="해지일자" />
                     </columns>
                   </TableView>
                </children>

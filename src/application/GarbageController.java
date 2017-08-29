@@ -1,7 +1,7 @@
 package application;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,6 +11,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -35,6 +43,7 @@ public class GarbageController implements Initializable{
 	String sql, bar_name;
 	int bar_id = 0;
 	ObservableList<StoreBean> storeList;
+	StoreBean store;
 	
 	@FXML
 	Alert alert;
@@ -45,9 +54,9 @@ public class GarbageController implements Initializable{
 	@FXML
 	private TableView<StoreBean> storeTable;
 	@FXML
-	private TableColumn<StoreBean, String> stoNameCol,inDateCol,ceoNameCol,corpNumCol,addressCol,phoneCol,hpCol,stoStateCol,outDateCol;
+	private TableColumn<StoreBean, String> stoNameCol,inDateCol,ceoNameCol,corpNumCol,addressCol,phoneCol,hpCol,stoStateCol,outDateCol,barCol;
 	@FXML
-	private TableColumn<StoreBean, Integer> codeCol,barCol;
+	private TableColumn<StoreBean, Integer> codeCol;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -87,24 +96,7 @@ public class GarbageController implements Initializable{
 		return comboList;
 	}
 	
-	private List<String> getDB_info() {
-		try {
-			BufferedReader br = new BufferedReader(new FileReader("C:/Garbage/Mirae_Net.dat"));
-			String dbIp = br.readLine();
-			list.add(dbIp);
-			String dbName = br.readLine();			
-			list.add(dbName);
-			String dbPort = br.readLine();
-			list.add(dbPort);
-			br.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return list;
-	}
-	
 	private Connection dbConn() {
-		//String DBUrl="jdbc:sqlserver://"+list.get(0)+":"+list.get(2)+";databaseName="+list.get(1);
 		String DBUrl="jdbc:sqlserver://210.99.49.107:9906;databaseName=dongnae_garbage";
 		String user = "sa";
 		String pwd = "kcmcard3003";
@@ -121,16 +113,20 @@ public class GarbageController implements Initializable{
 	}
 	
 	private ObservableList<StoreBean> getStore(int bar_id) {
-		ObservableList<StoreBean> storeList = FXCollections.observableArrayList();
+		storeList = FXCollections.observableArrayList();
 		if(bar_id!=0) {
-			sql = "SELECT * FROM store_info WHERE bar_id="+bar_id;
+			sql = "SELECT store.key_num,sto_name,store.in_date,store.ceo_name,store.corp_num,store.address" + 
+					" ,store.main_phone,ceo_hp,bar_id,store_state,out_date,trade_state,store.c_upte,store.c_jongmok,e_mail" + 
+					" ,branch.bar_name FROM store_info as store INNER JOIN branch_a branch ON store.bar_id=branch.main_code WHERE store.bar_id="+bar_id;
 		} else {
-			sql = "SELECT * FROM store_info";
+			sql = "SELECT store.key_num,sto_name,store.in_date,store.ceo_name,store.corp_num,store.address" + 
+					" ,store.main_phone,ceo_hp,bar_id,store_state,out_date,trade_state,store.c_upte,store.c_jongmok,e_mail" + 
+					" ,branch.bar_name FROM store_info as store INNER JOIN branch_a branch ON store.bar_id=branch.main_code";
 		}
 		try {
 			rs = getRs(sql);
 			while(rs.next()) {
-				StoreBean store = new StoreBean();
+				store = new StoreBean();
 				store.setKey_num(new SimpleIntegerProperty(rs.getInt("key_num")));
 				store.setSto_name(new SimpleStringProperty(rs.getString("sto_name")));
 				store.setIn_date(new SimpleStringProperty(rs.getString("in_date").substring(0, 10)));
@@ -141,6 +137,10 @@ public class GarbageController implements Initializable{
 				if(!main_phone.equals("")) {
 					if(main_phone.length()>=7) {
 						store.setMain_phone(new SimpleStringProperty(main_phone.substring(0,3)+"-"+main_phone.substring(3,6)+"-"+main_phone.substring(6)));
+					} else if(main_phone.length()>3 && main_phone.length()<7) {
+						store.setMain_phone(new SimpleStringProperty(main_phone.substring(0,3)+"-"+main_phone.substring(3)));
+					} else {
+						store.setMain_phone(new SimpleStringProperty(main_phone));
 					}
 				}
 				//store.setMain_phone(new SimpleStringProperty(main_phone));
@@ -148,10 +148,15 @@ public class GarbageController implements Initializable{
 				if(!ceo_hp.equals("")) {
 					if(ceo_hp.length()>=7) {
 						store.setCeo_hp(new SimpleStringProperty(ceo_hp.substring(0,3)+"-"+ceo_hp.substring(3,7)+"-"+ceo_hp.substring(7)));
+					} else if(ceo_hp.length()>3 && ceo_hp.length()<7) {
+						store.setCeo_hp(new SimpleStringProperty(ceo_hp.substring(0,3)+"-"+ceo_hp.substring(3)));
+					} else {
+						store.setCeo_hp(new SimpleStringProperty(ceo_hp));
 					}
 				}
 				//store.setCeo_hp(new SimpleStringProperty(ceo_hp));
-				store.setBar_id(new SimpleIntegerProperty(rs.getInt("bar_id")));
+				//store.setBar_id(new SimpleIntegerProperty(rs.getInt("bar_id")));
+				store.setBar_name(new SimpleStringProperty(rs.getString("bar_name")));
 				store.setStore_state(new SimpleStringProperty(rs.getString("store_state")));
 				store.setOut_date(new SimpleStringProperty(rs.getString("out_date").substring(0, 10)));
 				store.setTrade_state(new SimpleStringProperty(rs.getString("trade_state")));
@@ -177,10 +182,26 @@ public class GarbageController implements Initializable{
 		addressCol.setCellValueFactory(storeList->storeList.getValue().getAddress());
 		phoneCol.setCellValueFactory(storeList->storeList.getValue().getMain_phone());
 		hpCol.setCellValueFactory(storeList->storeList.getValue().getCeo_hp());
-		barCol.setCellValueFactory(storeList->storeList.getValue().getBar_id().asObject());
+		barCol.setCellValueFactory(storeList->storeList.getValue().getBar_name());
 		stoStateCol.setCellValueFactory(storeList->storeList.getValue().getStore_state());
 		outDateCol.setCellValueFactory(storeList->storeList.getValue().getOut_date());
 		storeTable.setItems(storeList);
+	}
+	
+	@FXML
+	private void excelSave() throws EncryptedDocumentException, InvalidFormatException, IOException {
+		storeList = getStore(bar_id);
+		Workbook xls = WorkbookFactory.create(new File("C:/store.xls"));
+		Sheet sheet = xls.createSheet("sheet1");
+		int rowNum = 0;
+		for(int i=0; i<storeList.size();i++) {
+			Row row = sheet.createRow(rowNum++);
+			int colNum = 0;
+			for(int j=0; j<12; j++) {
+				Cell cell = row.createCell(colNum++);
+				
+			}
+		}
 	}
 	
 	private ResultSet getRs(String sql) throws SQLException {
