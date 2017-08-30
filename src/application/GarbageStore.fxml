@@ -36,11 +36,11 @@
       <AnchorPane prefHeight="128.0" prefWidth="1453.0" BorderPane.alignment="CENTER">
          <children>
             <Button fx:id="searchBtn" layoutX="422.0" layoutY="48.0" mnemonicParsing="false" onAction="#tableSet" prefHeight="60.0" prefWidth="119.0" text="검  색" />
-            <Button fx:id="excelBtn" layoutX="576.0" layoutY="49.0" mnemonicParsing="false" prefHeight="59.0" prefWidth="128.0" text="Excel" />
+            <Button fx:id="excelBtn" layoutX="576.0" layoutY="49.0" mnemonicParsing="false" onAction="#excelSave" prefHeight="59.0" prefWidth="128.0" text="Excel" />
             <Group layoutX="158.0" layoutY="20.0">
                <children>
-                  <RadioButton layoutX="94.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="79.0" text="거래종료" />
-                  <RadioButton layoutY="16.0" mnemonicParsing="false" text="정상거래" />
+                  <RadioButton fx:id="noState" layoutX="94.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="79.0" text="거래종료" />
+                  <RadioButton fx:id="yesState" layoutY="16.0" mnemonicParsing="false" selected="true" text="정상거래" />
                </children>
             </Group>
             <Label alignment="CENTER" layoutX="76.0" layoutY="33.0" prefHeight="31.0" prefWidth="56.0" text="거래구분" textAlignment="CENTER" />

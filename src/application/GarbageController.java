@@ -1,6 +1,7 @@
 package application;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
@@ -13,12 +14,12 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import org.apache.poi.EncryptedDocumentException;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -30,8 +31,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
@@ -40,13 +44,17 @@ public class GarbageController implements Initializable{
 	Connection con;
 	PreparedStatement pstmt;
 	ResultSet rs;
-	String sql, bar_name;
+	String sql, bar_name, excelPath;
 	int bar_id = 0;
 	ObservableList<StoreBean> storeList;
 	StoreBean store;
+	FileChooser fc;
+	File excelName;
 	
 	@FXML
-	Alert alert;
+	private Stage primaryStage;
+	@FXML
+	private Alert alert;
 	@FXML
 	private ComboBox<String> barCom;
 	@FXML
@@ -57,6 +65,8 @@ public class GarbageController implements Initializable{
 	private TableColumn<StoreBean, String> stoNameCol,inDateCol,ceoNameCol,corpNumCol,addressCol,phoneCol,hpCol,stoStateCol,outDateCol,barCol;
 	@FXML
 	private TableColumn<StoreBean, Integer> codeCol;
+	@FXML
+	private RadioButton yesState, noState;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -77,9 +87,7 @@ public class GarbageController implements Initializable{
 					} catch (SQLException e) {
 						e.printStackTrace();
 					}
-					
 				}
-				
 			});
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -114,15 +122,13 @@ public class GarbageController implements Initializable{
 	
 	private ObservableList<StoreBean> getStore(int bar_id) {
 		storeList = FXCollections.observableArrayList();
+		sql = "SELECT store.key_num,sto_name,store.in_date,store.ceo_name,store.corp_num,store.address" + 
+				" ,store.main_phone,ceo_hp,bar_id,store_state,out_date,trade_state,store.c_upte,store.c_jongmok,e_mail" + 
+				" ,branch.bar_name FROM store_info as store INNER JOIN branch_a branch ON store.bar_id=branch.main_code WHERE trade_state = 'Y'";
 		if(bar_id!=0) {
-			sql = "SELECT store.key_num,sto_name,store.in_date,store.ceo_name,store.corp_num,store.address" + 
-					" ,store.main_phone,ceo_hp,bar_id,store_state,out_date,trade_state,store.c_upte,store.c_jongmok,e_mail" + 
-					" ,branch.bar_name FROM store_info as store INNER JOIN branch_a branch ON store.bar_id=branch.main_code WHERE store.bar_id="+bar_id;
-		} else {
-			sql = "SELECT store.key_num,sto_name,store.in_date,store.ceo_name,store.corp_num,store.address" + 
-					" ,store.main_phone,ceo_hp,bar_id,store_state,out_date,trade_state,store.c_upte,store.c_jongmok,e_mail" + 
-					" ,branch.bar_name FROM store_info as store INNER JOIN branch_a branch ON store.bar_id=branch.main_code";
+			sql +=  "and store.bar_id="+bar_id;
 		}
+		sql += "ORDER BY sto_name";
 		try {
 			rs = getRs(sql);
 			while(rs.next()) {
@@ -143,7 +149,6 @@ public class GarbageController implements Initializable{
 						store.setMain_phone(new SimpleStringProperty(main_phone));
 					}
 				}
-				//store.setMain_phone(new SimpleStringProperty(main_phone));
 				String ceo_hp = rs.getString("ceo_hp");
 				if(!ceo_hp.equals("")) {
 					if(ceo_hp.length()>=7) {
@@ -154,8 +159,6 @@ public class GarbageController implements Initializable{
 						store.setCeo_hp(new SimpleStringProperty(ceo_hp));
 					}
 				}
-				//store.setCeo_hp(new SimpleStringProperty(ceo_hp));
-				//store.setBar_id(new SimpleIntegerProperty(rs.getInt("bar_id")));
 				store.setBar_name(new SimpleStringProperty(rs.getString("bar_name")));
 				store.setStore_state(new SimpleStringProperty(rs.getString("store_state")));
 				store.setOut_date(new SimpleStringProperty(rs.getString("out_date").substring(0, 10)));
@@ -191,19 +194,110 @@ public class GarbageController implements Initializable{
 	@FXML
 	private void excelSave() throws EncryptedDocumentException, InvalidFormatException, IOException {
 		storeList = getStore(bar_id);
-		Workbook xls = WorkbookFactory.create(new File("C:/store.xls"));
-		Sheet sheet = xls.createSheet("sheet1");
-		int rowNum = 0;
+		fc = new FileChooser();
+		fc.setTitle("다른 이름으로 저장 - xls");
+		FileChooser.ExtensionFilter xlsFilter = new FileChooser.ExtensionFilter("xls file(*.xls)", "*.xls");
+		fc.getExtensionFilters().add(xlsFilter);
+		excelName =  fc.showSaveDialog(primaryStage);
+		excelPath = excelName.getPath().replace("\\", "/");
+		
+		Workbook xls = new HSSFWorkbook();
+		FileOutputStream fos = new FileOutputStream(excelPath);
+		Sheet sheet = xls.createSheet("판매소현황");
+		Row headRow = sheet.createRow(0);
+		for(int z=0; z<=11; z++) {
+			Cell headCell = headRow.createCell(z);
+			switch (z) {
+			case 0:
+				headCell.setCellValue("코드번호");
+				break;
+			case 1:
+				headCell.setCellValue("판매소명");
+				break;
+			case 2:
+				headCell.setCellValue("계약일자");
+				break;
+			case 3:
+				headCell.setCellValue("대표자명");
+				break;
+			case 4:
+				headCell.setCellValue("사업자번호");
+				break;
+			case 5:
+				headCell.setCellValue("주   소");
+				break;
+			case 6:
+				headCell.setCellValue("전화번호");
+				break;
+			case 7:
+				headCell.setCellValue("폰번호");
+				break;
+			case 8:
+				headCell.setCellValue("관할금고명");
+				break;
+			case 9:
+				headCell.setCellValue("판매소구분");
+			case 10:
+				headCell.setCellValue("해지일자");
+				break;
+			default:
+				break;
+			}
+		}
+		int rowNum = 1;
 		for(int i=0; i<storeList.size();i++) {
 			Row row = sheet.createRow(rowNum++);
 			int colNum = 0;
-			for(int j=0; j<12; j++) {
+			for(int j=0; j<=11; j++) {
 				Cell cell = row.createCell(colNum++);
-				
+				switch (j) {
+				case 0:
+					cell.setCellValue(storeList.get(i).getKey_num().getValue().intValue());
+					break;
+				case 1:
+					cell.setCellValue(storeList.get(i).getSto_name().getValue());
+					break;
+				case 2:
+					cell.setCellValue(storeList.get(i).getIn_date().getValue());
+					break;
+				case 3:
+					cell.setCellValue(storeList.get(i).getCeo_name().getValue());
+					break;
+				case 4:
+					cell.setCellValue(storeList.get(i).getCorp_num().getValue());
+					break;
+				case 5:
+					cell.setCellValue(storeList.get(i).getAddress().getValue());
+					break;
+				case 6:
+					if(storeList.get(i).getMain_phone()!=null)
+						cell.setCellValue(storeList.get(i).getMain_phone().getValue());
+					break;
+				case 7:
+					if(storeList.get(i).getCeo_hp()!=null)
+					cell.setCellValue(storeList.get(i).getCeo_hp().getValue());
+					break;
+				case 8:
+					cell.setCellValue(storeList.get(i).getBar_name().getValue());
+					break;
+				case 9:
+					cell.setCellValue(storeList.get(i).getStore_state().getValue());
+					break;
+				case 10:
+					cell.setCellValue(storeList.get(i).getOut_date().getValue());
+					break;
+				default:
+					break;
+				}
 			}
 		}
+		xls.write(fos);
+		fos.close();
+		alert = new Alert(AlertType.INFORMATION);
+		alert.setContentText("저장완료");
+		alert.showAndWait();
 	}
-	
+
 	private ResultSet getRs(String sql) throws SQLException {
 		con = dbConn();
 		pstmt  = con.prepareStatement(sql);
