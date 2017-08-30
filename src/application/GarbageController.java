@@ -27,8 +27,11 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser;
@@ -38,13 +41,15 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.Toggle;
+import javafx.scene.control.ToggleGroup;
 
 public class GarbageController implements Initializable{
 	List<String> list = new ArrayList<String>();
 	Connection con;
 	PreparedStatement pstmt;
 	ResultSet rs;
-	String sql, bar_name, excelPath;
+	String sql, bar_name, excelPath, tradeState;
 	int bar_id = 0;
 	ObservableList<StoreBean> storeList;
 	StoreBean store;
@@ -67,6 +72,8 @@ public class GarbageController implements Initializable{
 	private TableColumn<StoreBean, Integer> codeCol;
 	@FXML
 	private RadioButton yesState, noState;
+	@FXML
+	private ToggleGroup gr;
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -74,6 +81,23 @@ public class GarbageController implements Initializable{
 		try {
 			ObservableList<String> barList = getBarName();
 			barCom.setItems(barList);
+			yesState.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					if(gr!=null) {
+						gr.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+							@Override
+							public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue,
+									Toggle newValue) {
+								if(newValue.equals("거래종료")) {
+									
+								}
+							}
+							
+						});
+					}
+				}
+			});
 			barCom.valueProperty().addListener(new ChangeListener<String>() {
 				@Override
 				public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
@@ -122,6 +146,7 @@ public class GarbageController implements Initializable{
 	
 	private ObservableList<StoreBean> getStore(int bar_id) {
 		storeList = FXCollections.observableArrayList();
+		tradeState = "'Y'";
 		sql = "SELECT store.key_num,sto_name,store.in_date,store.ceo_name,store.corp_num,store.address" + 
 				" ,store.main_phone,ceo_hp,bar_id,store_state,out_date,trade_state,store.c_upte,store.c_jongmok,e_mail" + 
 				" ,branch.bar_name FROM store_info as store INNER JOIN branch_a branch ON store.bar_id=branch.main_code WHERE trade_state = 'Y'";
