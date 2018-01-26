@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
-
 import org.apache.poi.EncryptedDocumentException;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
@@ -20,18 +19,14 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Group;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.FileChooser;
@@ -49,7 +44,7 @@ public class GarbageController implements Initializable{
 	Connection con;
 	PreparedStatement pstmt;
 	ResultSet rs;
-	String sql, bar_name, excelPath, tradeState;
+	String sql, bar_name, excelPath, tradeState = "'Y'";
 	int bar_id = 0;
 	ObservableList<StoreBean> storeList;
 	StoreBean store;
@@ -81,35 +76,36 @@ public class GarbageController implements Initializable{
 		try {
 			ObservableList<String> barList = getBarName();
 			barCom.setItems(barList);
-			yesState.setOnAction(new EventHandler<ActionEvent>() {
+			gr = new ToggleGroup();
+			yesState.setToggleGroup(gr);
+			noState.setToggleGroup(gr);
+			gr.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
 				@Override
-				public void handle(ActionEvent event) {
-					if(gr!=null) {
-						gr.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-							@Override
-							public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue,
-									Toggle newValue) {
-								if(newValue.equals("거래종료")) {
-									
-								}
-							}
-							
-						});
+				public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue,
+				Toggle newValue) {
+					if(noState.isSelected()) {
+						tradeState = "'N'";
+					} else {
+						tradeState = "'Y'";
 					}
-				}
+				}			
 			});
 			barCom.valueProperty().addListener(new ChangeListener<String>() {
 				@Override
 				public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-					sql = "SELECT main_code FROM branch_a WHERE bar_name='"+newValue+"'";
-					try {
-						pstmt = con.prepareStatement(sql);
-						rs = pstmt.executeQuery();
-						if(rs.next()) {
-							bar_id = rs.getInt("main_code");
+					if(!newValue.equals("전체")) {
+						sql = "SELECT key_num FROM branch_a WHERE bar_name='"+newValue+"'";
+						try {
+							pstmt = con.prepareStatement(sql);
+							rs = pstmt.executeQuery();
+							if(rs.next()) {
+								bar_id = rs.getInt("key_num");
+							}
+						} catch (SQLException e) {
+							e.printStackTrace();
 						}
-					} catch (SQLException e) {
-						e.printStackTrace();
+					} else {
+						bar_id = 0;
 					}
 				}
 			});
@@ -120,6 +116,7 @@ public class GarbageController implements Initializable{
 	
 	private ObservableList<String> getBarName() throws SQLException {
 		ObservableList<String> comboList = FXCollections.observableArrayList();
+		comboList.add("전체");
 		sql = "SELECT bar_name FROM branch_a WHERE state='Y'";
 		rs = getRs(sql);
 		while(rs.next()) {
@@ -146,14 +143,14 @@ public class GarbageController implements Initializable{
 	
 	private ObservableList<StoreBean> getStore(int bar_id) {
 		storeList = FXCollections.observableArrayList();
-		tradeState = "'Y'";
 		sql = "SELECT store.key_num,sto_name,store.in_date,store.ceo_name,store.corp_num,store.address" + 
 				" ,store.main_phone,ceo_hp,bar_id,store_state,out_date,trade_state,store.c_upte,store.c_jongmok,e_mail" + 
-				" ,branch.bar_name FROM store_info as store INNER JOIN branch_a branch ON store.bar_id=branch.main_code WHERE trade_state = 'Y'";
+				" ,branch.bar_name FROM store_info as store INNER JOIN branch_a branch ON store.bar_id=branch.key_num WHERE trade_state ="+tradeState;
 		if(bar_id!=0) {
-			sql +=  "and store.bar_id="+bar_id;
+			sql +=  " and store.bar_id="+bar_id;
 		}
-		sql += "ORDER BY sto_name";
+		sql += " ORDER BY sto_name";
+		System.out.println(sql);
 		try {
 			rs = getRs(sql);
 			while(rs.next()) {
@@ -238,30 +235,39 @@ public class GarbageController implements Initializable{
 				break;
 			case 1:
 				headCell.setCellValue("판매소명");
+				sheet.setColumnWidth(z, 7000);
 				break;
 			case 2:
 				headCell.setCellValue("계약일자");
+				sheet.setColumnWidth(z, 3000);
 				break;
 			case 3:
 				headCell.setCellValue("대표자명");
+				sheet.setColumnWidth(z, 4000);
 				break;
 			case 4:
 				headCell.setCellValue("사업자번호");
+				sheet.setColumnWidth(z, 3500);
 				break;
 			case 5:
 				headCell.setCellValue("주   소");
+				sheet.setColumnWidth(z, 20000);
 				break;
 			case 6:
 				headCell.setCellValue("전화번호");
+				sheet.setColumnWidth(z, 5000);
 				break;
 			case 7:
 				headCell.setCellValue("폰번호");
+				sheet.setColumnWidth(z, 5000);
 				break;
 			case 8:
 				headCell.setCellValue("관할금고명");
+				sheet.setColumnWidth(z, 5000);
 				break;
 			case 9:
 				headCell.setCellValue("판매소구분");
+				sheet.setColumnWidth(z, 5000);
 			case 10:
 				headCell.setCellValue("해지일자");
 				break;
@@ -318,6 +324,7 @@ public class GarbageController implements Initializable{
 		}
 		xls.write(fos);
 		fos.close();
+		xls.close();
 		alert = new Alert(AlertType.INFORMATION);
 		alert.setContentText("저장완료");
 		alert.showAndWait();
@@ -328,12 +335,5 @@ public class GarbageController implements Initializable{
 		pstmt  = con.prepareStatement(sql);
 		rs = pstmt.executeQuery();
 		return rs;
-	}
-	
-	private void dbClose() {
-		if(con!=null)try {con.close();} catch (Exception e) {}
-		if(rs!=null)try {rs.close();} catch (Exception e) {}
-		if(pstmt!=null)try {pstmt.close();} catch (Exception e) {}
-		sql="";
 	}
 }
